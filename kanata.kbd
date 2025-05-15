@@ -1,0 +1,43 @@
+;; defsrc is still necessary
+(defcfg
+  process-unmapped-keys yes
+  concurrent-tap-hold yes
+)
+
+(defsrc
+  caps a s d f j k l ;
+)
+
+(defvar
+  tap-time 150
+  tap-time-stop 200
+  hold-time-timeout 500
+
+  tap-time-slow 200
+  hold-time-slow-stop 250
+  hold-time-slow-timeout 500
+)
+
+;; https://github.com/jtroo/kanata/discussions/1455
+(deftemplate charmod (char mod)
+  (switch
+    ((key-timing 3 less-than $tap-time-stop)) $char break
+    () (tap-hold-release-timeout $tap-time $hold-time-timeout $char $mod $char) break
+  )
+)
+
+(defalias
+  escctrl (tap-hold 100 100 esc lctl)
+  a (t! charmod a lmet)
+  s (t! charmod s lalt)
+  d (t! charmod d lsft)
+  f (t! charmod f lctl)
+  j (t! charmod j rctl)
+  k (t! charmod k rsft)
+  l (t! charmod l ralt)
+  ; (t! charmod ; rmet)
+)
+
+(deflayer base
+  @escctrl @a @s @d @f @j @k @l @;
+)
