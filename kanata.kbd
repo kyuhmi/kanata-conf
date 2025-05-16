@@ -1,7 +1,7 @@
 ;; defsrc is still necessary
 (defcfg
   process-unmapped-keys yes
-  ;; concurrent-tap-hold yes
+  concurrent-tap-hold yes
 )
 
 (defsrc
@@ -9,8 +9,8 @@
 )
 
 (defvar
-  tap-time 150
-  tap-time-stop 200
+  tap-time 200
+  tap-time-stop 250
   hold-time-timeout 500
 
   tap-time-slow 200
@@ -19,10 +19,17 @@
 )
 
 ;; https://github.com/jtroo/kanata/discussions/1455
-(deftemplate charmod (char mod)
+(deftemplate charmod-to (char mod)
   (switch
     ((key-timing 3 less-than $tap-time-stop)) $char break
     () (tap-hold-release-timeout $tap-time $hold-time-timeout $char $mod $char) break
+  )
+)
+
+(deftemplate charmod (char mod)
+  (switch
+    ((key-timing 3 less-than $tap-time-stop)) $char break
+    () (tap-hold-release $tap-time $hold-time-timeout $char $mod) break
   )
 )
 
