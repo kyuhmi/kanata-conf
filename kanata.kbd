@@ -9,27 +9,27 @@
 )
 
 (defvar
-  tap-time 200
-  tap-time-stop 250
-  hold-time-timeout 500
+  tap-timeout 200
+  tap-timeout-stop 250
+  hold-timeout 500
 
-  tap-time-slow 200
-  hold-time-slow-stop 250
-  hold-time-slow-timeout 500
-)
-
-;; https://github.com/jtroo/kanata/discussions/1455
-(deftemplate charmod-to (char mod)
-  (switch
-    ((key-timing 3 less-than $tap-time-stop)) $char break
-    () (tap-hold-release-timeout $tap-time $hold-time-timeout $char $mod $char) break
+  left-hand-keys (
+    q w e r t
+    a s d f g
+    z x c v b
+  )
+  right-hand-keys (
+    y u i o p
+    h j k l ;
+    n m , . /
   )
 )
 
+;; https://github.com/jtroo/kanata/discussions/1455
 (deftemplate charmod (char mod)
   (switch
-    ((key-timing 3 less-than $tap-time-stop)) $char break
-    () (tap-hold-release $tap-time $hold-time-timeout $char $mod) break
+    ((key-timing 3 less-than $tap-timeout-stop)) $char break
+    () (tap-hold-release-timeout $tap-timeout $hold-timeout $char $mod $char) break
   )
 )
 
