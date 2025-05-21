@@ -5,7 +5,7 @@
 )
 
 (defsrc
-  caps a s d f j k l ;
+  home caps a s d f j k l ;
 )
 
 (defvar
@@ -44,8 +44,15 @@
   k (t! charmod $hold-timeout      k rsft)
   l (t! charmod $hold-timeout-long l ralt)
   ; (t! charmod $hold-timeout-long ; rmet)
+
+  home-to-mods (t! charmod 1000 home (layer-switch homerow-mods))
+  home-to-nomods (t! charmod 1000 home (layer-switch nomods))
 )
 
 (deflayer homerow-mods
-  @escctrl @a @s @d @f @j @k @l @;
+  @home-to-nomods @escctrl @a @s @d @f @j @k @l @;
+)
+
+(deflayer nomods
+  @home-to-mods @escctrl a s d f j k l ;
 )
