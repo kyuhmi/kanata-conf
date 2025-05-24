@@ -1,11 +1,13 @@
-;; defsrc is still necessary
 (defcfg
   process-unmapped-keys yes
   concurrent-tap-hold yes
 )
 
 (defsrc
-  home caps a s d f j k l ;
+  q w e r t y u i o p
+  caps a s d f g h j k l ; '
+  spc
+  home
 )
 
 (defvar
@@ -45,14 +47,36 @@
   l (t! charmod $hold-timeout-long l ralt)
   ; (t! charmod $hold-timeout-long ; rmet)
 
+  spc (t! charmod $hold-timeout-long spc (layer-while-held space-mods))
+
   home-to-mods (t! charmod 1000 home (layer-switch homerow-mods))
   home-to-nomods (t! charmod 1000 home (layer-switch nomods))
 )
 
+(defalias
+    h-nav left
+    j-nav down
+    k-nav up
+    l-nav rght
+)
+
 (deflayer homerow-mods
-  @home-to-nomods @escctrl @a @s @d @f @j @k @l @;
+  q w e r t y u i o p
+  @escctrl @a @s @d @f g h @j @k @l @; '
+  @spc
+  @home-to-nomods
+)
+
+(deflayer space-mods
+  S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-0
+  _ _ _ _ _ _ @h-nav @j-nav @k-nav @l-nav _ bspc
+  _
+  _
 )
 
 (deflayer nomods
-  @home-to-mods @escctrl a s d f j k l ;
+  q w e r t y u i o p
+  @escctrl a s d f g h j k l ; '
+  spc
+  @home-to-mods
 )
