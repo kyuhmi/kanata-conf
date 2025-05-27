@@ -4,7 +4,7 @@
 )
 
 (defsrc
-  q w e r t y u i o p
+  tab q w e r t y u i o p [  ]
   caps a s d f g h j k l ; '
   spc
   home
@@ -67,21 +67,21 @@
 )
 
 (deflayer homerow-mods
-  q w e r t y u i o p
+  tab q w e r t y u i o p [  ]
   @escctrl @a @s @d @f g h @j @k @l @; '
   @spc
   @home-to-nomods
 )
 
 (deflayer space-mods
-  S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-0
-  _ _ _ _ _ _ @h-nav @j-nav @k-nav @l-nav _ bspc
+  S-grv S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-0 S-- S-=
+  _ _ _ _ _ _ @h-nav @j-nav @k-nav @l-nav - bspc
   _
   _
 )
 
 (deflayer nomods
-  q w e r t y u i o p
+  tab q w e r t y u i o p [  ]
   @escctrl a s d f g h j k l ; '
   spc
   @home-to-mods
