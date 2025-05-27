@@ -14,43 +14,49 @@
   tap-timeout 300
   hold-timeout 180
   hold-timeout-long 200
-  streak-time 160
+  streak-time 250
 
+  ;; lh keys minus mods (a s d f)
   left-hand-keys (
     q w e r t
-    a s d f g
+    g
     z x c v b
   )
+
+  ;; rh keys minus mods (j k l ;)
   right-hand-keys (
     y u i o p
-    h j k l ;
+    h
     n m , . /
   )
+
+  ;; empty keys
+  empty-keys ()
 )
 
 ;; https://github.com/jtroo/kanata/discussions/1455
-(deftemplate charmod (timeout-hold char mod)
+(deftemplate charmod (timeout-hold char mod keys)
   (switch
     ((key-timing 3 less-than $streak-time)) $char break
-    () (tap-hold-release $tap-timeout $timeout-hold $char $mod) break
+    () (tap-hold-release-keys $tap-timeout $timeout-hold $char $mod $keys) break
   )
 )
 
 (defalias
   escctrl (tap-hold 100 100 esc lctl)
-  a (t! charmod $hold-timeout-long a lmet)
-  s (t! charmod $hold-timeout-long s lalt)
-  d (t! charmod $hold-timeout      d lsft)
-  f (t! charmod $hold-timeout      f lctl)
-  j (t! charmod $hold-timeout      j rctl)
-  k (t! charmod $hold-timeout      k rsft)
-  l (t! charmod $hold-timeout-long l ralt)
-  ; (t! charmod $hold-timeout-long ; rmet)
+  a (t! charmod $hold-timeout-long a lmet $left-hand-keys)
+  s (t! charmod $hold-timeout-long s lalt $left-hand-keys)
+  d (t! charmod $hold-timeout      d lsft $left-hand-keys)
+  f (t! charmod $hold-timeout      f lctl $left-hand-keys)
+  j (t! charmod $hold-timeout      j rctl $right-hand-keys)
+  k (t! charmod $hold-timeout      k rsft $right-hand-keys)
+  l (t! charmod $hold-timeout-long l ralt $right-hand-keys)
+  ; (t! charmod $hold-timeout-long ; rmet $right-hand-keys)
 
-  spc (t! charmod $hold-timeout-long spc (layer-while-held space-mods))
+  spc (t! charmod $hold-timeout-long spc (layer-while-held space-mods) $empty-keys)
 
-  home-to-mods (t! charmod 1000 home (layer-switch homerow-mods))
-  home-to-nomods (t! charmod 1000 home (layer-switch nomods))
+  home-to-mods (t! charmod 500 home (layer-switch homerow-mods) $empty-keys)
+  home-to-nomods (t! charmod 500 home (layer-switch nomods) $empty-keys)
 )
 
 (defalias
