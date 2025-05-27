@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./install.sh && systemctl restart kanata.service
+./install.sh && sudo systemctl restart kanata.service

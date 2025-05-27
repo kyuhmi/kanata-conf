@@ -11,10 +11,10 @@
 )
 
 (defvar
-  tap-timeout 200
-  hold-timeout 150
+  tap-timeout 300
+  hold-timeout 180
   hold-timeout-long 200
-  streak-time 140
+  streak-time 160
 
   left-hand-keys (
     q w e r t
