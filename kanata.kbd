@@ -1,64 +1,17 @@
 (defcfg
-  process-unmapped-keys yes
-  concurrent-tap-hold yes
+process-unmapped-keys yes
 )
+;; timeings should work fine for 40 to 80 words per minute; if you are slower or new to home row mods increasing them might help in getting started
 
-(defsrc
-  tab q w e r t y u i o p [  ]
-  caps a s d f g h j k l ; '
-  spc
-  home
+(defvirtualkeys
+  to-base (layer-switch base)
 )
 
 (defvar
-  tap-timeout 300
-  hold-timeout 180
-  hold-timeout-long 200
-  streak-time 250
-
-  ;; lh keys minus mods (a s d f)
-  left-hand-keys (
-    q w e r t
-    g
-    z x c v b
-  )
-
-  ;; rh keys minus mods (j k l ;)
-  right-hand-keys (
-    y u i o p
-    h
-    n m , . /
-  )
-
-  ;; empty keys
-  empty-keys ()
+  tot 220  ;; tot=time out tap
 )
 
-;; https://github.com/jtroo/kanata/discussions/1455
-(deftemplate charmod (timeout-hold char mod keys)
-  (switch
-    ((key-timing 3 less-than $streak-time)) $char break
-    () (tap-hold-release-keys $tap-timeout $timeout-hold $char $mod $keys) break
-  )
-)
-
-(defalias
-  escctrl (tap-hold 100 100 esc lctl)
-  a (t! charmod $hold-timeout-long a lmet $left-hand-keys)
-  s (t! charmod $hold-timeout-long s lalt $left-hand-keys)
-  d (t! charmod $hold-timeout      d lsft $left-hand-keys)
-  f (t! charmod $hold-timeout      f lctl $left-hand-keys)
-  j (t! charmod $hold-timeout      j rctl $right-hand-keys)
-  k (t! charmod $hold-timeout      k rsft $right-hand-keys)
-  l (t! charmod $hold-timeout-long l ralt $right-hand-keys)
-  ; (t! charmod $hold-timeout-long ; rmet $right-hand-keys)
-
-  spc (t! charmod $hold-timeout-long spc (layer-while-held space-mods) $empty-keys)
-
-  home-to-mods (t! charmod 500 home (layer-switch homerow-mods) $empty-keys)
-  home-to-nomods (t! charmod 500 home (layer-switch nomods) $empty-keys)
-)
-
+;; vim-like directions
 (defalias
     h-nav left
     j-nav down
@@ -66,23 +19,96 @@
     l-nav rght
 )
 
-(deflayer homerow-mods
-  tab q w e r t y u i o p [  ]
-  @escctrl @a @s @d @f g h @j @k @l @; '
-  @spc
-  @home-to-nomods
+(deftemplate homerowmod (timeouttap timeouthold keytap keyhold)
+	(tap-hold $timeouttap $timeouthold
+		(multi $keytap  @.tp)
+		$keyhold
+	)
 )
 
-(deflayer space-mods
-  S-grv S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-0 S-- S-=
-  _ _ _ _ _ _ @h-nav @j-nav @k-nav @l-nav - bspc
-  _
-  _
+;; homerowmodfiltered is a way to force problematic bigrams to become letters not mods
+(deftemplate homerowmodfiltered (timeouttap timeouthold keytap keyhold typinglist)
+  (tap-hold-release-keys $timeouttap $timeouthold
+    (multi $keytap  @.tp)
+    $keyhold
+    $typinglist ;; Activates $keytap early if a key within $typinglist is pressed before hold activates.
+  )
 )
 
-(deflayer nomods
-  tab q w e r t y u i o p [  ]
-  @escctrl a s d f g h j k l ; '
-  spc
-  @home-to-mods
+(defalias
+  ;; call @.tp whenever you want to enter fast typing-layer
+  .tp (switch
+        ;;(lsft rsft) XX break ;; optional skip typing-layer activation for upper case keys might solves some FJ problems
+        ()  (multi
+              (layer-switch typing)
+              (on-idle 55 tap-vkey to-base) ;; timeouts from 30 to 100 are wide spread
+            ) break
+      )
+  .spc-typing   (multi (layer-switch base) spc) ;; expilcitly leave typing-layer when hitting `space` - this allows experimenting with higher idle timeouts
+)
+
+(defsrc )
+
+(deflayermap (base)
+ caps (tap-hold 100 100 esc lctl)
+
+ ;; define home row mods (they act as typing-layer triggers, too )
+ a (t! homerowmod $tot 160 a lmet)
+ ;; s (t! homerowmodfiltered $tot 160 s lalt (a)) ;; example fix of the 'as' role
+ s (t! homerowmod $tot 160 s lalt)
+ d (t! homerowmod $tot 160 d lsft)
+ f (t! homerowmod $tot 160 f lctl)
+ j (t! homerowmod $tot 160 j rctl)
+ k (t! homerowmod $tot 160 k rsft)
+ l (t! homerowmod $tot 160 l ralt)
+ ; (t! homerowmod $tot 160 ; rmet)
+
+ spc (t! homerowmod $tot 160 spc (layer-while-held spacemods)) ;; switch to spacemods
+
+ home (t! homerowmod $tot 500 home (layer-switch nomods)) ;; turn off mods holding home
+
+ ;; define each letter as typing-layer trigger
+ q (multi q @.tp) w (multi w @.tp) e (multi e @.tp) r (multi r @.tp) t (multi t @.tp) y (multi y @.tp) u (multi u @.tp) i (multi i @.tp) o (multi o @.tp) p (multi p @.tp) g (multi g @.tp) h (multi h @.tp) z (multi z @.tp) x (multi x @.tp) c (multi c @.tp) v (multi v @.tp) b (multi b @.tp) n (multi n @.tp) m (multi m @.tp)
+)
+
+(deflayermap (spacemods)
+ caps (tap-hold 100 100 esc lctl)
+
+ a (t! homerowmod $tot 160 a lmet)
+ s (t! homerowmod $tot 160 s lalt)
+ d (t! homerowmod $tot 160 d lsft)
+ f (t! homerowmod $tot 160 f lctl)
+ h @h-nav
+ j @j-nav
+ k @k-nav
+ l @l-nav
+ tab S-grv
+ ; ;
+ ' bspc
+ q S-1
+ w S-2
+ e S-3
+ r S-4
+ t S-5
+ y S-6
+ u S-7
+ i S-8
+ o S-9
+ p S-0
+ [ S--
+ ] S-=
+
+ ;; define each letter as typing-layer trigger
+ ;; q (multi q @.tp) w (multi w @.tp) e (multi e @.tp) r (multi r @.tp) t (multi t @.tp) y (multi y @.tp) u (multi u @.tp) i (multi i @.tp) o (multi o @.tp) p (multi p @.tp)
+ g (multi g @.tp) z (multi z @.tp) x (multi x @.tp) c (multi c @.tp) v (multi v @.tp) b (multi b @.tp) n (multi n @.tp) m (multi m @.tp)
+
+)
+
+(deflayermap (typing)
+ caps (tap-hold 100 100 esc lctl)
+ a a b b c c d d e e f f g g h h i i j j k k l l m m n n o o p p q q r r s s t t u u v v w w x x y y z z
+)
+
+(deflayermap (nomods)
+ home (t! homerowmod $tot 500 home (layer-switch base))
 )

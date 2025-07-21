@@ -25,6 +25,7 @@ if [[ "$install_service" =~ ^[Yy]$ ]]; then
     read -rp "Do you want to enable and start the Kanata service now? (y/n): " start_service
 
     if [[ "$start_service" =~ ^[Yy]$ ]]; then
+        sudo systemctl stop kanata.service
         sudo systemctl enable --now kanata.service
         echo "Kanata service has been enabled and started."
     else
