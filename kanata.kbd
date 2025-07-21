@@ -83,7 +83,7 @@ process-unmapped-keys yes
  k @k-nav
  l @l-nav
  tab S-grv
- ; ;
+ ; -
  ' bspc
  q S-1
  w S-2
