@@ -110,5 +110,5 @@ process-unmapped-keys yes
 )
 
 (deflayermap (base)
- home (t! homerowmod $tot 500 home (layer-switch mods)) ; turn on homerow mods by holding home
+ home (t! homerowmod $tot 500 home (layer-switch mods)) ;; turn on homerow mods by holding home
 )
